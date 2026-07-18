@@ -532,7 +532,7 @@ function renderTeam(){
     if(!el) continue;
     el.innerHTML = TEAM[key].map(m=>`
       <div class="member" onclick="if(!event.target.closest('.ph'))this.classList.toggle('open')">
-        <div class="ph"><img loading="lazy" src="assets_web/team_${m.img}.webp" alt="${m.n}"></div>
+        <div class="ph"><img loading="lazy" decoding="async" src="assets_web/thumb/team_${m.img}.webp" data-full="assets_web/team_${m.img}.webp" alt="${m.n}"></div>
         <div class="info"><h4>${m.n}<span class="yrs">${m.y}</span></h4><div class="en">${m.e}</div><div class="role">${m.r}</div></div>
         <div class="cases">
           <p class="bio">${m.d}</p>
@@ -548,7 +548,7 @@ function renderCases(f='all'){
   const grid = document.getElementById('caseGrid');
   grid.innerHTML = CASES.filter(c=>f==='all'||c.f===f).map(c=>`
     <div class="case">
-      <div class="thumb"><img loading="lazy" src="assets_web/case_${c.img}.webp" alt="${c.t}"></div>
+      <div class="thumb"><img loading="lazy" decoding="async" src="assets_web/thumb/case_${c.img}.webp" data-full="assets_web/case_${c.img}.webp" alt="${c.t}"></div>
       <div class="meta"><h4>${c.t}</h4>
         <div class="tags"><span class="tag city">${c.city}</span><span class="tag type">${c.type}</span></div>
       </div>
@@ -623,7 +623,7 @@ function lbClose(){ lb.classList.remove('on'); document.body.style.overflow=''; 
 document.addEventListener('click', e=>{
   const img = e.target.closest('.ph img, .thumb img, .honor-img img, .about-img img');
   if(!img) return;
-  lbImg.src = img.src;
+  lbImg.src = img.dataset.full || img.src;
   lb.querySelector('.lb-cap').textContent = img.alt || '';
   lb.classList.add('on');
   document.body.style.overflow = 'hidden';
