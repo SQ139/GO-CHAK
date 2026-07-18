@@ -293,7 +293,7 @@ footer{border-top:1px solid var(--line);padding:44px 6vw 34px;background:var(--b
       </div>
     </div>
     <div class="about-img reveal">
-      <img src="assets_web/team_group.jpg" alt="高策传媒团队合影">
+      <img src="assets_web/team_group.webp" alt="高策传媒团队合影">
       <div class="cap">GO CHAK TEAM · 高策传媒核心团队</div>
     </div>
   </div>
@@ -351,7 +351,7 @@ footer{border-top:1px solid var(--line);padding:44px 6vw 34px;background:var(--b
       <div class="honor-item"><div class="dot"></div><div><h4>共建声像灯光技术实验室</h4><p>与广州大学产学研合作共建</p></div></div>
       <div class="honor-item"><div class="dot"></div><div><h4>专业人才持证上岗</h4><p>演出经纪人 · 舞美专业技术资质 · 特种作业操作证</p></div></div>
     </div>
-    <div class="honor-img reveal"><img src="assets_web/cert_wall.jpg" alt="资质证书墙"></div>
+    <div class="honor-img reveal"><img src="assets_web/cert_wall.webp" alt="资质证书墙"></div>
   </div>
 </section>
 
@@ -532,7 +532,7 @@ function renderTeam(){
     if(!el) continue;
     el.innerHTML = TEAM[key].map(m=>`
       <div class="member" onclick="if(!event.target.closest('.ph'))this.classList.toggle('open')">
-        <div class="ph"><img loading="lazy" src="assets_web/team_${m.img}.jpg" alt="${m.n}"></div>
+        <div class="ph"><img loading="lazy" src="assets_web/team_${m.img}.webp" alt="${m.n}"></div>
         <div class="info"><h4>${m.n}<span class="yrs">${m.y}</span></h4><div class="en">${m.e}</div><div class="role">${m.r}</div></div>
         <div class="cases">
           <p class="bio">${m.d}</p>
@@ -548,7 +548,7 @@ function renderCases(f='all'){
   const grid = document.getElementById('caseGrid');
   grid.innerHTML = CASES.filter(c=>f==='all'||c.f===f).map(c=>`
     <div class="case">
-      <div class="thumb"><img loading="lazy" src="assets_web/case_${c.img}.jpg" alt="${c.t}"></div>
+      <div class="thumb"><img loading="lazy" src="assets_web/case_${c.img}.webp" alt="${c.t}"></div>
       <div class="meta"><h4>${c.t}</h4>
         <div class="tags"><span class="tag city">${c.city}</span><span class="tag type">${c.type}</span></div>
       </div>
