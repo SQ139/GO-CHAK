@@ -179,12 +179,11 @@ section{padding:110px 6vw;position:relative}
   transition:.4s;opacity:1;transform:scale(1)}
 .case.hide{display:none}
 .case:hover{transform:translateY(-6px);border-color:rgba(230,0,18,.5);box-shadow:0 22px 52px rgba(0,0,0,.55)}
-.case .thumb{aspect-ratio:16/10;overflow:hidden}
-.case .thumb img{width:100%;height:100%;object-fit:cover;transition:transform .7s}
-.case:hover .thumb img{transform:scale(1.08)}
-.case .thumb img.lz{filter:blur(14px);transform:scale(1.06);transition:transform .7s,filter .45s ease}
-.case .thumb img.lz.ok{filter:none;transform:none}
-.case:hover .thumb img.lz.ok{transform:scale(1.08)}
+.case .thumb{aspect-ratio:16/10;overflow:hidden;position:relative;background-size:cover;background-position:center}
+.case .thumb .spr{position:absolute;inset:0;background-repeat:no-repeat;background-size:400% 500%;cursor:zoom-in;transition:transform .7s}
+.case .thumb .spr.s0{background-image:url(assets_web/sheet_case_0.webp)}
+.case .thumb .spr.s1{background-image:url(assets_web/sheet_case_1.webp)}
+.case:hover .thumb .spr{transform:scale(1.08)}
 .case .meta{padding:18px 20px}
 .case h4{font-size:16.5px;font-weight:700;line-height:1.45}
 .case .tags{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
@@ -549,35 +548,23 @@ function renderTeam(){
   }
 }
 
-/* ================= 模糊占位懒加载（提前1.6屏预取） ================= */
-const _io = ('IntersectionObserver' in window) ? new IntersectionObserver(es=>{
-  es.forEach(en=>{
-    if(!en.isIntersecting) return;
-    const im = en.target;
-    _io.unobserve(im);
-    im.onload = ()=>im.classList.add('ok');
-    im.src = im.dataset.src;
-  });
-},{rootMargin:'160% 0px'}) : null;
-function lazyObserve(root){
-  root.querySelectorAll('img.lz').forEach(im=>{
-    if(_io){ _io.observe(im); }
-    else{ im.src = im.dataset.src; im.classList.add('ok'); }
-  });
-}
-
-/* ================= 案例渲染 + 筛选 ================= */
+/* ================= 案例渲染 + 筛选（雪碧图：40张缩略图合并为2张一次请求，兼容老内核） ================= */
 function renderCases(f='all'){
   const grid = document.getElementById('caseGrid');
-  grid.innerHTML = CASES.filter(c=>f==='all'||c.f===f).map(c=>`
+  grid.innerHTML = CASES.map((c,i)=>({c:c,i:i})).filter(o=>f==='all'||o.c.f===f).map(o=>{
+    const i = o.i, c = o.c;
+    const si = i<20?0:1, local = i%20;
+    const x = (local%4)*33.3333, y = ((local/4)|0)*25;
+    return `
     <div class="case">
-      <div class="thumb"><img class="lz" decoding="async" src="${LQIP['case_'+c.img]}" data-src="assets_web/thumb/case_${c.img}.webp" data-full="assets_web/case_${c.img}.webp" alt="${c.t}"></div>
+      <div class="thumb" style="background-image:url(${LQIP['case_'+c.img]})"><div class="spr s${si}" style="background-position:${x}% ${y}%" data-full="assets_web/case_${c.img}.webp" aria-label="${c.t}"></div></div>
       <div class="meta"><h4>${c.t}</h4>
         <div class="tags"><span class="tag city">${c.city}</span><span class="tag type">${c.type}</span></div>
       </div>
-    </div>`).join('');
-  lazyObserve(grid);
+    </div>`;}).join('');
 }
+/* 提前初始化核心内容：团队与案例先渲染，后续增强代码若在老内核出错不影响主体内容 */
+try{ renderTeam(); renderCases(); }catch(e){ if(window.console)console.error(e); }
 document.getElementById('caseTabs').addEventListener('click', e=>{
   const b = e.target.closest('.tab'); if(!b) return;
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -645,10 +632,10 @@ function zApply(anim){
 function zReset(){ zs=1; zx=0; zy=0; zApply(false); }
 function lbClose(){ lb.classList.remove('on'); document.body.style.overflow=''; zReset(); }
 document.addEventListener('click', e=>{
-  const img = e.target.closest('.ph img, .thumb img, .honor-img img, .about-img img');
+  const img = e.target.closest('.ph img, .thumb .spr, .thumb img, .honor-img img, .about-img img');
   if(!img) return;
   lbImg.src = img.dataset.full || img.src;
-  lb.querySelector('.lb-cap').textContent = img.alt || '';
+  lb.querySelector('.lb-cap').textContent = img.alt || img.getAttribute('aria-label') || '';
   lb.classList.add('on');
   document.body.style.overflow = 'hidden';
   zReset();
@@ -703,9 +690,7 @@ lb.addEventListener('touchend', e=>{
   else if(e.touches.length===1 && zs>1){ tMode=1; lastX=e.touches[0].clientX; lastY=e.touches[0].clientY; }
 });
 
-/* ================= 初始化 ================= */
-renderTeam();
-renderCases();
+/* ================= 初始化（核心渲染已提前至数据区后，此处仅挂滚动增强） ================= */
 bindReveal();
 </script>
 </body>
